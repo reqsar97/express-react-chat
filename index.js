@@ -4,15 +4,18 @@ const handlebars = require('express-handlebars')
 			.create({defaultLayout: 'main'});
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const authMiddleware = require('connect-ensure-login');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const multer = require('multer');
+
 const Message = require('./models/message');
 const credentials = require('./credentials');
 
 const port = process.env.PORT || 5000;
 const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+
 const routes = require('./routes/web');
 const User = require('./models/user');
 
@@ -51,11 +54,13 @@ mongoose.connect(credentials.mongo.development.connectionString, opts, err => {
 
 // Set seesion and cookies
 app.use(require('cookie-parser')(credentials.cookieSecret));
-app.use(require('express-session')({
+const sessionMiddleware = require('express-session')({
 	resave: false,
 	saveUninitialized: false,
 	secret: credentials.cookieSecret
-}));
+});
+
+app.use(sessionMiddleware);
 
 // Passport auth
 app.use(passport.initialize());
@@ -94,7 +99,34 @@ passport.deserializeUser((id, cb) => {
 
 // Set routes
 app.use('/', upload.single('image'), routes);
+// Socket connection
+io.use((socket, next) => {
+        // Wrap the express middleware
+	sessionMiddleware(socket.request, {}, next);
+}).on('connection', socket => {
+	socket.on('chat message', msg => {
+		const userId = socket.request.session.passport.user;
+		User.find({_id: userId}, (err, user) => {
+			if (err) {
+				console.log('Cant find user', err);
+				return;
+			}
+			io.emit('chat message', {
+				msg,
+				imgUrl: user[0].imgUrl
+			});
+		});
+		const message = new Message({
+			author: userId,
+			body: msg,
+			createdAt: Date.now()
+		});
+		message.save((err, res) => {
+			console.log(err);
+		});
+	});
+});
 // Start server listen
-app.listen(port, () => {
+http.listen(port, () => {
 	console.log('server start on port 3000');
 });

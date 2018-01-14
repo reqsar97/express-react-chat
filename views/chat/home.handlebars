@@ -5,7 +5,7 @@
           </form>
         </div>
         <div class="row">
-          <ul class="list-group" style="height:250px; width:100%;
+          <ul id="messages" class="list-group" style="height:250px; width:100%;
   overflow-y: scroll;">
             {{#each messages}}
               <li class="list-group-item">
@@ -16,7 +16,7 @@
           </ul>
         </div>
         <div class="row">
-          <form class="form-inline" method="post" action="/">
+          <form id='messageForm' class="form-inline" method="post" action="/">
             <div class="form-group">
               <div class="col-md-8">
                 <label for="inputMessage" class="sr-only">Message</label>
@@ -29,3 +29,19 @@
           </form>
         </div>
       </div>
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        $(function () {
+          var socket = io();
+          $('#messageForm').submit(function(){
+            socket.emit('chat message', $('#inputMessage').val());
+            $('#inputMessage').val('');
+            return false;
+          });
+          socket.on('chat message', function(data){
+            console.log(data);
+            $('#messages').append('<li class="list-group-item"><img class="rounded-circle" alt="Cinque Terre" width="50" height="50" src="/img/'+data.imgUrl+'"/>'+data.msg+'</li>');
+            $('.list-group').scrollTop(10000);
+          });
+        });
+      </script>
