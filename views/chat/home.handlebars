@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Chat</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
-  </head>
-    <body>
       <div class="container">
         <div class="row">
-          <ul class="list-group">
+          <form class="form-grup float-md-right" action="/logout" method="post">
+            <button type="submit" class="btn btn-primary mb-2">Logout</button>
+          </form>
+        </div>
+        <div class="row">
+          <ul class="list-group" style="height:250px; width:100%;
+  overflow-y: scroll;">
             {{#each messages}}
               <li class="list-group-item">
-                <img src="/img/profilePic1.jpg" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
+                <img src="/img/{{this.author.imgUrl}}" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
                 {{this.body}}
               </li>
             {{/each}}
@@ -23,13 +22,10 @@
                 <label for="inputMessage" class="sr-only">Message</label>
                 <input autofocus name="message" type="text" class="form-control" id="inputMessage" placeholder="Message">
             </div>
+              <div class="form-group col-md-3">
+                <button type="submit" class="btn btn-primary mb-2">Send</button>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary mb-2">Send</button>
           </form>
         </div>
       </div>
-    </body>
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
-</html>
