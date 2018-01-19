@@ -141,8 +141,6 @@ io
             });
         });
         socket.on("logout", msg => {
-            var index = usersName.indexOf(socket.userName);
-            usersName.splice(index, 1);
             usersName = usersName.filter(function(value) {
                 if (value !== socketuserName) {
                     return true;
