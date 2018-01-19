@@ -142,7 +142,7 @@ io
         });
         socket.on("logout", msg => {
             usersName = usersName.filter(function(value) {
-                if (value !== socketuserName) {
+                if (value !== socket.userName) {
                     return true;
                 }
                 return false;
