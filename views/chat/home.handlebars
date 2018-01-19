@@ -1,19 +1,25 @@
       <div class="container">
         <div class="row">
-          <form class="form-grup float-md-right" action="/logout" method="post">
+          <form id="logoutForm" class="form-grup float-md-right" action="/logout" method="post">
             <button type="submit" class="btn btn-primary mb-2">Logout</button>
           </form>
         </div>
         <div class="row">
-          <ul id="messages" class="list-group" style="height:250px; width:100%;
-  overflow-y: scroll;">
-            {{#each messages}}
-              <li class="list-group-item">
-                <img src="/img/{{this.author.imgUrl}}" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
-                {{this.body}}
-              </li>
-            {{/each}}
-          </ul>
+            <div class="col-sm-6 col-md-4 col-md-offset-4">
+              <ul id="messages" class="list-group" style="height:250px; width:100%;
+      overflow-y: scroll;">
+                {{#each messages}}
+                  <li class="list-group-item">
+                    <img src="/img/{{this.author.imgUrl}}" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
+                    {{this.body}}
+                  </li>
+                {{/each}}
+              </ul>
+          </div>
+          <div class="col-sm-6 col-md-4 col-md-offset-4">
+              <ul id="onlineUsers" class="list-group">
+              </ul>
+          </div>
         </div>
         <div class="row">
           <form id='messageForm' class="form-inline" method="post" action="/">
@@ -28,20 +34,37 @@
             </div>
           </form>
         </div>
+    </div>
       </div>
       <script src="/socket.io/socket.io.js"></script>
       <script>
+      var socket = io();
         $(function () {
-          var socket = io();
+
           $('#messageForm').submit(function(){
             socket.emit('chat message', $('#inputMessage').val());
             $('#inputMessage').val('');
             return false;
+          });
+          $('#logoutForm').submit(function(){
+            socket.emit('logout', 'logOut');
+            return true;
           });
           socket.on('chat message', function(data){
             console.log(data);
             $('#messages').append('<li class="list-group-item"><img class="rounded-circle" alt="Cinque Terre" width="50" height="50" src="/img/'+data.imgUrl+'"/>'+data.msg+'</li>');
             $('.list-group').scrollTop(10000);
           });
+          socket.on('online', function (data) {
+              console.log(data);
+              var onlineUsers = '';
+              for (var i = 0; i < data.online.length; i++) {
+                  onlineUsers += '<li class="list-group-item">'+data.online[i]+'</li>\n'
+              }
+              $('#onlineUsers').html(
+                  onlineUsers
+              );
+          })
+          socket.emit('new user', "bob");
         });
       </script>
