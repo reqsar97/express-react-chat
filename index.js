@@ -142,11 +142,12 @@ io
         });
         socket.on("logout", msg => {
             usersName = usersName.filter(function(value) {
-                if (value !== socket.userName) {
+                if (value !== socket.username) {
                     return true;
                 }
                 return false;
             });
+            console.log("changed array", usersName);
             io.emit("online", {
                 online: usersName
             });
